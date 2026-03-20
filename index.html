@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bamer Bence Visual — Cinematographer · Content Creator · AI Artist</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Outfit:wght@200;300;400;500;600&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #faf7f2;
+            --bg-warm: #f5f0e8;
+            --bg-sand: #eee8dc;
+            --bg-card: #ffffff;
+            --text: #1c1917;
+            --text-secondary: #57534e;
+            --text-muted: #a8a29e;
+            --accent: #9e7442;
+            --accent-light: #b8935e;
+            --accent-warm: #d4a86c;
+            --accent-bg: rgba(158,116,66,0.05);
+            --accent-border: rgba(158,116,66,0.18);
+            --border: #e7e0d4;
+            --border-light: #f0ebe3;
+            --navy: #2c3e5a;
+            --shadow-sm: 0 1px 3px rgba(28,25,23,0.04);
+            --shadow-md: 0 4px 24px rgba(28,25,23,0.06);
+            --shadow-lg: 0 12px 48px rgba(28,25,23,0.08);
+            --serif: 'Cormorant Garamond', Georgia, serif;
+            --sans: 'Outfit', -apple-system, sans-serif;
+            --mono: 'JetBrains Mono', monospace;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        ::selection { background: var(--accent-warm); color: #fff; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: var(--sans); background: var(--bg); color: var(--text);
+            line-height: 1.6; overflow-x: hidden; -webkit-font-smoothing: antialiased;
+        }
+
+        .loader {
+            position: fixed; inset: 0; background: var(--bg); z-index: 10000;
+            display: flex; align-items: center; justify-content: center;
+            transition: opacity .8s, visibility .8s;
+        }
+        .loader.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+        .loader-text {
+            font-family: var(--serif); font-size: clamp(1rem,2.5vw,1.5rem);
+            font-weight: 300; letter-spacing: .35em; text-transform: uppercase;
+            color: var(--accent); animation: pulse 1.5s ease-in-out infinite;
+        }
+        @keyframes pulse { 0%,100%{opacity:.3} 50%{opacity:1} }
+
+        nav {
+            position: fixed; top: 0; width: 100%; z-index: 1000;
+            background: rgba(250,247,242,0.92); backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid transparent; transition: all .4s;
+        }
+        nav.scrolled { border-bottom-color: var(--border); box-shadow: var(--shadow-sm); }
+        .nav-inner {
+            max-width: 1300px; margin: 0 auto; padding: 1.1rem 2.5rem;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .nav-brand {
+            font-family: var(--serif); font-size: 1.2rem; font-weight: 400;
+            letter-spacing: .08em; color: var(--text); text-decoration: none;
+        }
+        .nav-links { display: flex; gap: 2rem; list-style: none; }
+        .nav-links a {
+            font-size: .72rem; font-weight: 400; letter-spacing: .06em;
+            text-transform: uppercase; color: var(--text-secondary);
+            text-decoration: none; position: relative; padding-bottom: 3px; transition: color .3s;
+        }
+        .nav-links a::after {
+            content:''; position: absolute; bottom: 0; left: 0;
+            width: 0; height: 1px; background: var(--accent); transition: width .35s;
+        }
+        .nav-links a:hover { color: var(--accent); }
+        .nav-links a:hover::after { width: 100%; }
+        .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; z-index: 1001; }
+        .hamburger span { width: 22px; height: 1.5px; background: var(--text); transition: all .3s; }
+
+        .hero {
+            min-height: 100vh; display: flex; flex-direction: column; justify-content: center;
+            padding: 8rem 2.5rem 6rem; position: relative; overflow: hidden;
+            max-width: 1300px; margin: 0 auto;
+        }
+        .hero-deco {
+            position: absolute; top: 8%; right: -8%; width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(158,116,66,0.06) 0%, transparent 65%);
+            border-radius: 50%; pointer-events: none;
+        }
+        .hero-deco-2 {
+            position: absolute; bottom: 5%; left: -12%; width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(44,62,90,0.04) 0%, transparent 65%);
+            border-radius: 50%; pointer-events: none;
+        }
+        .hero-line {
+            position: absolute; top: 0; left: 6%; width: 1px; height: 0;
+            background: linear-gradient(to bottom, transparent, var(--border), transparent);
+            animation: lineGrow 1.5s ease-out .8s forwards;
+        }
+        @keyframes lineGrow { to { height: 35vh; } }
+        .hero-content { position: relative; z-index: 2; max-width: 820px; }
+        .hero-eyebrow {
+            font-family: var(--mono); font-size: .6rem; font-weight: 400;
+            letter-spacing: .3em; text-transform: uppercase; color: var(--accent);
+            margin-bottom: 1.5rem; opacity: 0; animation: fadeUp .7s ease 1s forwards;
+        }
+        .hero h1 {
+            font-family: var(--serif); font-size: clamp(2.8rem,7vw,5.8rem);
+            font-weight: 300; line-height: 1.08; letter-spacing: -.02em;
+            color: var(--text); margin-bottom: 2rem;
+            opacity: 0; animation: fadeUp .9s ease 1.2s forwards;
+        }
+        .hero h1 em { font-style: italic; color: var(--accent); }
+        .hero-sub {
+            font-size: 1.05rem; font-weight: 300; color: var(--text-secondary);
+            max-width: 550px; line-height: 1.8;
+            opacity: 0; animation: fadeUp .7s ease 1.5s forwards;
+        }
+        @keyframes fadeUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+        .hero-scroll {
+            position: absolute; bottom: 2.5rem; right: 2.5rem;
+            display: flex; flex-direction: column; align-items: center; gap: .5rem;
+            opacity: 0; animation: fadeUp .7s ease 2s forwards;
+        }
+        .hero-scroll span {
+            font-family: var(--mono); font-size: .55rem; letter-spacing: .2em;
+            text-transform: uppercase; color: var(--text-muted); writing-mode: vertical-rl;
+        }
+        .scroll-line { width: 1px; height: 45px; background: var(--border); position: relative; overflow: hidden; }
+        .scroll-line::after {
+            content:''; position: absolute; top: -100%; left: 0; width: 100%; height: 100%;
+            background: var(--accent); animation: scrollP 2s ease-in-out infinite;
+        }
+        @keyframes scrollP { 0%{top:-100%} 100%{top:100%} }
+
+        .divider { width: 100%; height: 1px; background: var(--border); }
+
+        .section { padding: 7rem 2.5rem; max-width: 1300px; margin: 0 auto; }
+        .section-full { padding: 7rem 2.5rem; }
+        .section-number {
+            font-family: var(--mono); font-size: .58rem; letter-spacing: .3em;
+            color: var(--accent); text-transform: uppercase; margin-bottom: .8rem;
+        }
+        .section-heading {
+            font-family: var(--serif); font-size: clamp(2rem,4.5vw,3.5rem);
+            font-weight: 300; line-height: 1.15; color: var(--text); margin-bottom: 1.2rem;
+        }
+        .section-desc {
+            font-size: .95rem; font-weight: 300; color: var(--text-secondary);
+            max-width: 580px; line-height: 1.8;
+        }
+
+        .categories { padding-top: 8rem; padding-bottom: 5rem; }
+        .categories-header { text-align: center; margin-bottom: 5rem; }
+        .categories-header .section-desc { margin: 0 auto; text-align: center; }
+        .cat-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1.2rem; max-width: 1300px; margin: 0 auto; }
+        .cat-card {
+            position: relative; background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 12px; overflow: hidden; cursor: pointer;
+            transition: transform .4s, box-shadow .4s, border-color .4s;
+            text-decoration: none; color: inherit; display: block;
+        }
+        .cat-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-lg); border-color: var(--accent-border); }
+        .cat-card-top { height: 190px; position: relative; overflow: hidden; }
+        .cat-card-bg { position: absolute; inset: 0; transition: transform .6s; }
+        .cat-card:hover .cat-card-bg { transform: scale(1.05); }
+        .cat-card-bg.social { background: linear-gradient(135deg, #e8d5b8 0%, #f5e6d0 50%, #d4b896 100%); }
+        .cat-card-bg.cinema { background: linear-gradient(135deg, #c5d3e3 0%, #dce5ef 50%, #a8bdd4 100%); }
+        .cat-card-bg.portrait { background: linear-gradient(135deg, #d6c8b8 0%, #e8ddd0 50%, #c9b9a5 100%); }
+        .cat-card-bg.ai { background: linear-gradient(135deg, #d5c8e0 0%, #e5dced 50%, #c0b0d4 100%); }
+        .cat-card-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-size: 2.8rem; opacity: .3; }
+        .cat-card-content { padding: 1.8rem; }
+        .cat-tag {
+            font-family: var(--mono); font-size: .52rem; letter-spacing: .25em;
+            text-transform: uppercase; color: var(--accent); margin-bottom: .6rem;
+            display: flex; align-items: center; gap: .5rem;
+        }
+        .cat-tag::before { content:''; width: 16px; height: 1px; background: var(--accent); }
+        .cat-card h3 { font-family: var(--serif); font-size: 1.35rem; font-weight: 500; color: var(--text); margin-bottom: .6rem; line-height: 1.25; }
+        .cat-card p { font-size: .8rem; font-weight: 300; color: var(--text-secondary); line-height: 1.65; }
+        .cat-tools { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: 1rem; }
+        .tool-pill {
+            font-family: var(--mono); font-size: .5rem; letter-spacing: .06em;
+            padding: .25rem .55rem; border: 1px solid var(--border);
+            border-radius: 3px; color: var(--text-muted); text-transform: uppercase;
+        }
+
+        .detail-inner {
+            max-width: 1200px; margin: 0 auto;
+            display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: start;
+        }
+        .detail-frame {
+            aspect-ratio: 4/5; background: var(--bg-warm); border: 1px solid var(--border);
+            border-radius: 10px; position: relative; overflow: hidden;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .8rem;
+        }
+        .detail-frame-badge {
+            position: absolute; top: -1px; right: 1.5rem;
+            background: var(--accent); color: #fff;
+            font-family: var(--mono); font-size: .52rem; letter-spacing: .12em;
+            text-transform: uppercase; padding: .35rem .75rem; border-radius: 0 0 6px 6px;
+        }
+        .frame-icon { font-size: 2.5rem; opacity: .3; }
+        .frame-label {
+            font-family: var(--mono); font-size: .55rem; letter-spacing: .2em;
+            text-transform: uppercase; color: var(--text-muted); text-align: center; padding: 0 1rem;
+        }
+        .detail-text h3 {
+            font-family: var(--serif); font-size: clamp(1.7rem,3vw,2.5rem);
+            font-weight: 300; color: var(--text); margin-bottom: 1.2rem; line-height: 1.2;
+        }
+        .detail-text p { font-size: .92rem; font-weight: 300; color: var(--text-secondary); line-height: 1.85; margin-bottom: 1.2rem; }
+        .detail-list { list-style: none; margin: 1.8rem 0; }
+        .detail-list li {
+            padding: .65rem 0; border-bottom: 1px solid var(--border-light);
+            font-size: .85rem; color: var(--text); display: flex; align-items: center; gap: .8rem;
+        }
+        .detail-list li::before { content:'—'; color: var(--accent); font-weight: 300; }
+        .client-badge {
+            display: inline-flex; align-items: center; gap: .5rem;
+            padding: .5rem 1rem; border: 1px solid var(--border); border-radius: 6px;
+            margin-top: 1.2rem; font-family: var(--mono); font-size: .58rem;
+            letter-spacing: .12em; text-transform: uppercase; color: var(--text-secondary);
+        }
+        .client-dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; }
+
+        .cinema-grid { max-width: 1200px; margin: 0 auto; }
+        .cinema-hero-block { display: grid; grid-template-columns: 1.2fr 1fr; gap: 4rem; margin-top: 3.5rem; align-items: center; }
+        .cinema-wide-frame {
+            aspect-ratio: 21/9; background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 10px; position: relative; overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .cinema-wide-frame .frame-label { position: absolute; bottom: .8rem; right: 1.2rem; }
+        .cinema-wide-frame .frame-icon { font-size: 3rem; }
+        .cinema-credits { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 3rem; }
+        .credit-item { padding: 1.2rem 0; border-top: 1px solid var(--border); }
+        .credit-label {
+            font-family: var(--mono); font-size: .52rem; letter-spacing: .22em;
+            text-transform: uppercase; color: var(--accent); margin-bottom: .4rem;
+        }
+        .credit-value { font-family: var(--serif); font-size: 1.05rem; color: var(--text); font-weight: 400; }
+        .networks-strip {
+            display: flex; gap: 2.5rem; margin-top: 3rem; padding-top: 2.5rem;
+            border-top: 1px solid var(--border); flex-wrap: wrap; align-items: center;
+        }
+        .net-label { font-family: var(--mono); font-size: .52rem; letter-spacing: .22em; text-transform: uppercase; color: var(--text-muted); margin-right: .5rem; }
+        .network-name { font-family: var(--serif); font-size: 1.25rem; font-weight: 400; color: var(--text); opacity: .5; transition: opacity .3s; }
+        .network-name:hover { opacity: 1; }
+
+        .ai-inner { max-width: 1200px; margin: 0 auto; }
+        .ai-showcase { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.2rem; margin-top: 3.5rem; }
+        .ai-card {
+            background: var(--bg-card); padding: 2.2rem; border: 1px solid var(--border);
+            border-radius: 10px; transition: all .35s;
+        }
+        .ai-card:hover { border-color: var(--accent-border); box-shadow: var(--shadow-md); }
+        .ai-card-icon { font-size: 1.8rem; margin-bottom: 1.2rem; opacity: .5; }
+        .ai-card h4 { font-family: var(--serif); font-size: 1.2rem; font-weight: 500; color: var(--text); margin-bottom: .6rem; }
+        .ai-card p { font-size: .82rem; font-weight: 300; color: var(--text-secondary); line-height: 1.7; }
+        .ai-tools-section { margin-top: 4rem; padding-top: 2.5rem; border-top: 1px solid var(--border); }
+        .ai-tools-label { font-family: var(--mono); font-size: .52rem; letter-spacing: .28em; text-transform: uppercase; color: var(--accent); margin-bottom: 1.2rem; }
+        .ai-tools-grid { display: flex; flex-wrap: wrap; gap: .5rem; }
+        .ai-tool {
+            font-family: var(--mono); font-size: .6rem; letter-spacing: .06em;
+            padding: .45rem .9rem; border: 1px solid var(--border); border-radius: 4px;
+            color: var(--text-secondary); transition: all .3s;
+        }
+        .ai-tool:hover { border-color: var(--accent); color: var(--accent); }
+
+        .about-inner {
+            max-width: 1200px; margin: 0 auto;
+            display: grid; grid-template-columns: .8fr 1.2fr; gap: 5rem; align-items: center;
+        }
+        .about-portrait {
+            aspect-ratio: 3/4; background: var(--bg-warm); border: 1px solid var(--border);
+            border-radius: 10px; display: flex; align-items: center; justify-content: center; position: relative;
+        }
+        .about-portrait .frame-icon { font-size: 3rem; opacity: .25; }
+        .about-portrait .frame-label { position: absolute; bottom: 1rem; left: 1.2rem; }
+        .about-text h3 {
+            font-family: var(--serif); font-size: clamp(1.8rem,3vw,2.8rem);
+            font-weight: 300; color: var(--text); margin-bottom: 1.5rem; line-height: 1.2;
+        }
+        .about-text p { font-size: .92rem; font-weight: 300; color: var(--text-secondary); line-height: 1.85; margin-bottom: 1.2rem; }
+        .stats-row { display: flex; gap: 2.5rem; margin-top: 2.5rem; padding-top: 1.8rem; border-top: 1px solid var(--border); }
+        .stat-number { font-family: var(--serif); font-size: 2.2rem; font-weight: 300; color: var(--accent); }
+        .stat-label { font-family: var(--mono); font-size: .52rem; letter-spacing: .18em; text-transform: uppercase; color: var(--text-muted); margin-top: .2rem; }
+
+        .contact { background: var(--bg-warm); text-align: center; padding: 7rem 2.5rem; }
+        .contact .section-heading { margin: 0 auto 1rem; }
+        .contact .section-desc { margin: 0 auto 2.5rem; text-align: center; }
+        .contact-email {
+            font-family: var(--serif); font-size: clamp(1.1rem,2.5vw,1.8rem);
+            font-weight: 400; color: var(--accent); text-decoration: none;
+            letter-spacing: .04em; position: relative; padding-bottom: 3px; transition: color .3s;
+        }
+        .contact-email::after {
+            content:''; position: absolute; bottom: 0; left: 0;
+            width: 100%; height: 1px; background: var(--accent-border); transition: background .3s;
+        }
+        .contact-email:hover { color: var(--accent-light); }
+        .contact-email:hover::after { background: var(--accent-light); }
+        .contact-links { display: flex; justify-content: center; gap: 2.5rem; margin-top: 2.5rem; }
+        .contact-links a {
+            font-family: var(--mono); font-size: .58rem; letter-spacing: .18em;
+            text-transform: uppercase; color: var(--text-muted); text-decoration: none; transition: color .3s;
+        }
+        .contact-links a:hover { color: var(--accent); }
+
+        footer {
+            padding: 1.8rem 2.5rem; background: var(--bg);
+            display: flex; justify-content: space-between; align-items: center;
+            border-top: 1px solid var(--border);
+        }
+        footer p { font-family: var(--mono); font-size: .55rem; letter-spacing: .08em; color: var(--text-muted); }
+
+        .reveal { opacity: 0; transform: translateY(35px); transition: opacity .7s, transform .7s; }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+
+        @media(max-width:1100px) { .cat-grid { grid-template-columns: repeat(2,1fr); } }
+        @media(max-width:900px) {
+            .detail-inner, .about-inner, .cinema-hero-block { grid-template-columns: 1fr; gap: 3rem; }
+            .ai-showcase { grid-template-columns: 1fr; }
+            .cinema-credits { grid-template-columns: 1fr; }
+        }
+        @media(max-width:700px) {
+            .cat-grid { grid-template-columns: 1fr; }
+            nav .nav-links { display: none; }
+            .hamburger { display: flex; }
+            .nav-links.mobile-open {
+                display: flex; flex-direction: column; position: fixed; inset: 0;
+                background: rgba(250,247,242,.98); justify-content: center;
+                align-items: center; gap: 2rem; z-index: 999;
+            }
+            .nav-links.mobile-open a { font-size: .9rem; color: var(--text); }
+            .section, .section-full { padding: 4.5rem 1.5rem; }
+            .categories { padding-top: 5rem; }
+            .hero { padding: 7rem 1.5rem 4rem; }
+            .hero-scroll { display: none; }
+            .stats-row { flex-direction: column; gap: 1.2rem; }
+            .networks-strip { gap: 1.2rem; }
+            .contact { padding: 5rem 1.5rem; }
+            .nav-inner { padding: 1rem 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="loader" id="loader"><div class="loader-text">Bamer Bence Visual</div></div>
+
+<nav id="nav">
+    <div class="nav-inner">
+        <a href="#" class="nav-brand">Bamer Bence Visual</a>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="#work">Work</a></li>
+            <li><a href="#social">Content</a></li>
+            <li><a href="#cinema">Film</a></li>
+            <li><a href="#portrait">Portraits</a></li>
+            <li><a href="#ai">AI</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+        <div class="hamburger" id="hamburger"><span></span><span></span><span></span></div>
+    </div>
+</nav>
+
+<section class="hero">
+    <div class="hero-deco"></div>
+    <div class="hero-deco-2"></div>
+    <div class="hero-line"></div>
+    <div class="hero-content">
+        <div class="hero-eyebrow">Cinematographer · Content Creator · AI Artist</div>
+        <h1>Behind the <em>camera.</em> Ahead of the <em>curve.</em></h1>
+        <p class="hero-sub">I learned what makes a good image in newsrooms. Since then I've been shooting documentaries, taking portraits, and using AI to create visuals that weren't possible a few years ago.</p>
+    </div>
+    <div class="hero-scroll"><span>Scroll</span><div class="scroll-line"></div></div>
+</section>
+
+<div class="divider"></div>
+
+<section class="section categories" id="work">
+    <div class="categories-header reveal">
+        <div class="section-number">01 — Four Disciplines</div>
+        <h2 class="section-heading">Same eye. Different tools.</h2>
+        <p class="section-desc">Some jobs need a camera. Some need a studio. Some just need a good prompt. But the eye behind the work is always the same.</p>
+    </div>
+    <div class="cat-grid">
+        <a href="#social" class="cat-card reveal">
+            <div class="cat-card-top"><div class="cat-card-bg social"></div><div class="cat-card-icon">📱</div></div>
+            <div class="cat-card-content">
+                <div class="cat-tag">01</div>
+                <h3>Social Media & Content</h3>
+                <p>Photo, video, AI — ready-to-post content for brands. From the shoot to the upload.</p>
+                <div class="cat-tools"><span class="tool-pill">Video</span><span class="tool-pill">Photo</span><span class="tool-pill">AI</span><span class="tool-pill">Edit</span></div>
+            </div>
+        </a>
+        <a href="#cinema" class="cat-card reveal">
+            <div class="cat-card-top"><div class="cat-card-bg cinema"></div><div class="cat-card-icon">🎬</div></div>
+            <div class="cat-card-content">
+                <div class="cat-tag">02</div>
+                <h3>Documentary & Broadcast</h3>
+                <p>Feature doc in the works. Deutsche Welle, CNBC, and Bloomberg behind me.</p>
+                <div class="cat-tools"><span class="tool-pill">Documentary</span><span class="tool-pill">Broadcast</span><span class="tool-pill">News</span></div>
+            </div>
+        </a>
+        <a href="#portrait" class="cat-card reveal">
+            <div class="cat-card-top"><div class="cat-card-bg portrait"></div><div class="cat-card-icon">📷</div></div>
+            <div class="cat-card-content">
+                <div class="cat-tag">03</div>
+                <h3>Portrait Photography</h3>
+                <p>A photo of you that actually looks like your best day. Across Budapest.</p>
+                <div class="cat-tools"><span class="tool-pill">Studio</span><span class="tool-pill">Natural Light</span><span class="tool-pill">Editorial</span></div>
+            </div>
+        </a>
+        <a href="#ai" class="cat-card reveal">
+            <div class="cat-card-top"><div class="cat-card-bg ai"></div><div class="cat-card-icon">✨</div></div>
+            <div class="cat-card-content">
+                <div class="cat-tag">04</div>
+                <h3>Pure AI Creation</h3>
+                <p>No camera. No crew. Just a good idea, a few lines of prompt, and the video's done.</p>
+                <div class="cat-tools"><span class="tool-pill">Veo3</span><span class="tool-pill">Runway</span><span class="tool-pill">Kling</span><span class="tool-pill">MJ</span></div>
+            </div>
+        </a>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- Social Media -->
+<section class="section-full" id="social" style="background:var(--bg);">
+    <div class="section" style="padding-top:0;padding-bottom:0;">
+        <div class="detail-inner">
+            <div class="detail-frame reveal">
+                <div class="detail-frame-badge">Featured Client</div>
+                <div class="frame-icon">🏛</div>
+                <div class="frame-label">BÁV ART Auction — Showreel</div>
+            </div>
+            <div class="detail-text reveal">
+                <div class="section-number">02 — Social Media & Content</div>
+                <h3>Content that actually works</h3>
+                <p>There's no point making a beautiful video if nobody stops to watch it. Shoots, photography, AI animation — and at the end, content that actually performs in the feed.</p>
+                <p>I've been working with BÁV ART for years. On-location shoots, photography, AI-animated product showcases, finished cuts for Instagram, Facebook, TikTok. Full service, one person.</p>
+                <ul class="detail-list">
+                    <li>Product and lifestyle video shoots</li>
+                    <li>AI-animated visuals from still photos</li>
+                    <li>Event photography with fast video turnaround</li>
+                    <li>Platform-ready edits (Reels, Shorts, TikTok)</li>
+                    <li>Talking character videos with AI lip-sync</li>
+                </ul>
+                <div class="client-badge"><span class="client-dot"></span>Ongoing Partner — BÁV ART Auction House</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- Documentary -->
+<section class="section-full" id="cinema" style="background:var(--bg-warm);">
+    <div class="section" style="padding-top:0;padding-bottom:0;">
+        <div class="cinema-grid">
+            <div class="reveal">
+                <div class="section-number">03 — Documentary & Broadcast</div>
+                <h2 class="section-heading">Where I started.</h2>
+                <p class="section-desc">I grew up professionally in newsrooms. That's where I learned to work fast, work well, and never compromise on the image. From there I moved into documentary.</p>
+            </div>
+            <div class="cinema-hero-block reveal">
+                <div class="cinema-wide-frame">
+                    <div class="frame-icon">🎬</div>
+                    <div class="frame-label">Feature Documentary — Coming Soon</div>
+                </div>
+                <div>
+                    <h3 style="font-family:var(--serif);font-size:1.6rem;font-weight:400;color:var(--text);margin-bottom:.8rem;">First feature documentary</h3>
+                    <p style="font-size:.88rem;color:var(--text-secondary);line-height:1.8;font-weight:300;">My first feature-length documentary is in the works. Details coming soon — title, synopsis, stills, and festival info.</p>
+                </div>
+            </div>
+            <div class="cinema-credits reveal">
+                <div class="credit-item"><div class="credit-label">Role</div><div class="credit-value">Cinematographer & Director</div></div>
+                <div class="credit-item"><div class="credit-label">Background</div><div class="credit-value">Broadcast Journalist</div></div>
+                <div class="credit-item"><div class="credit-label">Format</div><div class="credit-value">Feature Length Documentary</div></div>
+                <div class="credit-item"><div class="credit-label">Status</div><div class="credit-value">In Progress</div></div>
+            </div>
+            <div class="networks-strip reveal">
+                <span class="net-label">Previous Networks</span>
+                <span class="network-name">Deutsche Welle</span>
+                <span class="network-name">CNBC</span>
+                <span class="network-name">Bloomberg</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- Portrait Photography -->
+<section class="section-full" id="portrait" style="background:var(--bg);">
+    <div class="section" style="padding-top:0;padding-bottom:0;">
+        <div class="detail-inner">
+            <div class="detail-text reveal">
+                <div class="section-number">04 — Portrait Photography</div>
+                <h3>It's about you, not the gear</h3>
+                <p>I don't care which lens I'm using. What matters is that the photo looks like you — on your best day. Headshot, editorial, personal portrait — the image is yours, the quality is on me.</p>
+                <p>We talk while I shoot. No awkward posing. Natural light or studio, anywhere in Budapest. Retouching and post-production are always included.</p>
+                <ul class="detail-list">
+                    <li>Business headshots and corporate portraits</li>
+                    <li>Editorial and lifestyle photo series</li>
+                    <li>On-location shoots across Budapest</li>
+                    <li>Studio work with professional lighting</li>
+                    <li>Retouching and post-production included</li>
+                </ul>
+                <div class="client-badge"><span class="client-dot"></span>Budapest Photo Tours — Bamer Bence Visual</div>
+            </div>
+            <div class="detail-frame reveal">
+                <div class="frame-icon">📷</div>
+                <div class="frame-label">Portfolio — Coming Soon</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- AI Creation -->
+<section class="section-full" id="ai" style="background:var(--bg-warm);">
+    <div class="section" style="padding-top:0;padding-bottom:0;">
+        <div class="ai-inner">
+            <div class="reveal">
+                <div class="section-number">05 — Pure AI Creation</div>
+                <h2 class="section-heading">No camera required</h2>
+                <p class="section-desc">A few lines of text, the right AI tools, and the video's done. Product video, brand film, character animation — it looks like a real shoot, but it's not.</p>
+            </div>
+            <div class="ai-showcase reveal">
+                <div class="ai-card">
+                    <div class="ai-card-icon">⚡</div>
+                    <h4>Short-Form Content</h4>
+                    <p>10–15 second AI videos for social. Product reveals, animated stills, dynamic brand content. Ready in days.</p>
+                </div>
+                <div class="ai-card">
+                    <div class="ai-card-icon">🎭</div>
+                    <h4>Talking Characters</h4>
+                    <p>AI-generated faces that speak convincingly. Testimonials, brand mascots, explainers — I'll do the voice too, if needed.</p>
+                </div>
+                <div class="ai-card">
+                    <div class="ai-card-icon">🎞</div>
+                    <h4>Longer Format</h4>
+                    <p>Multi-scene, polished videos, built entirely with AI. Script, image generation, editing — it all happens here.</p>
+                </div>
+            </div>
+            <div class="ai-tools-section reveal">
+                <div class="ai-tools-label">Toolkit</div>
+                <div class="ai-tools-grid">
+                    <span class="ai-tool">Veo3</span><span class="ai-tool">Runway Gen-3</span><span class="ai-tool">Kling AI</span>
+                    <span class="ai-tool">Luma</span><span class="ai-tool">Midjourney</span><span class="ai-tool">Stable Diffusion</span>
+                    <span class="ai-tool">ElevenLabs</span><span class="ai-tool">Suno AI</span><span class="ai-tool">Photoshop</span>
+                    <span class="ai-tool">DaVinci Resolve</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- About -->
+<section class="section-full" id="about" style="background:var(--bg);">
+    <div class="section" style="padding-top:0;padding-bottom:0;">
+        <div class="about-inner">
+            <div class="about-portrait reveal">
+                <div class="frame-icon">📷</div>
+                <div class="frame-label">Add Your Portrait</div>
+            </div>
+            <div class="about-text reveal">
+                <div class="section-number">06 — About</div>
+                <h3>Bence Bámer</h3>
+                <p>Based in Budapest. Cinematographer, photographer, content creator — and in recent years, increasingly serious about AI-generated video.</p>
+                <p>I started in television: camera operator and video journalist for Deutsche Welle, CNBC, and Bloomberg. That world taught me to work fast, work precise, and never let the quality slip — and that hasn't changed, no matter what tool I'm using.</p>
+                <p>Now I do it all at once: shooting my first documentary, taking portraits around Budapest, and using Runway and Midjourney to create things that would've been science fiction a couple of years ago. The eye stays the same — the tools keep changing.</p>
+                <div class="stats-row">
+                    <div class="stat"><div class="stat-number">100%</div><div class="stat-label">Upwork Job Success</div></div>
+                    <div class="stat"><div class="stat-number">Top Rated</div><div class="stat-label">Freelancer Status</div></div>
+                    <div class="stat"><div class="stat-number">3+</div><div class="stat-label">Intl. Networks</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- Contact -->
+<section class="contact" id="contact">
+    <div class="section-number">07 — Contact</div>
+    <h2 class="section-heading">Got an idea? Let's talk.</h2>
+    <p class="section-desc">Social content, a shoot, portraits, AI video — whatever it is, drop me a line.</p>
+    <a href="mailto:unclebence@gmail.com" class="contact-email">unclebence@gmail.com</a>
+    <div class="contact-links">
+        <a href="https://www.upwork.com/freelancers/benceb19" target="_blank">Upwork</a>
+        <a href="https://hu.linkedin.com/in/bence-b%C3%A1mer-5451701b" target="_blank">LinkedIn</a>
+        <a href="https://www.youtube.com/shorts/jWYo33gTXi8" target="_blank">YouTube</a>
+        <a href="#" target="_blank">Instagram</a>
+    </div>
+</section>
+
+<footer>
+    <p>&copy; 2026 Bamer Bence Visual. Budapest.</p>
+    <p>Made with intent.</p>
+</footer>
+
+<script>
+    window.addEventListener('load',()=>{setTimeout(()=>document.getElementById('loader').classList.add('hidden'),1000)});
+    window.addEventListener('scroll',()=>{document.getElementById('nav').classList.toggle('scrolled',window.scrollY>60)});
+    const hb=document.getElementById('hamburger'),nl=document.getElementById('navLinks');
+    hb.addEventListener('click',()=>nl.classList.toggle('mobile-open'));
+    nl.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>nl.classList.remove('mobile-open')));
+    const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')})},{threshold:.08,rootMargin:'0px 0px -40px 0px'});
+    document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+    document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener('click',function(e){e.preventDefault();const t=document.querySelector(this.getAttribute('href'));if(t)t.scrollIntoView({behavior:'smooth',block:'start'})})});
+</script>
+</body>
+</html>
